@@ -1,0 +1,1 @@
+Just a minimal template project for my personal odin/sokol experiments. It has hot reload and imgui, so I can play around with stuff.
