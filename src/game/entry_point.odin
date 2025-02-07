@@ -46,7 +46,7 @@ game_reloaded :: proc(mem: rawptr) {
 
 	simgui.set_context(g.imgui_context)
 
-	on_reload()
+	on_start_or_reload()
 }
 
 @(export)

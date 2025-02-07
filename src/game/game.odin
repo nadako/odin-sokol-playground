@@ -18,15 +18,6 @@ Globals :: struct {
 g: ^Globals
 
 init :: proc() {
-	g.shader = sg.make_shader(sample_shader_desc(sg.query_backend()))
-	g.pipeline = sg.make_pipeline({
-		shader = g.shader,
-		layout = {
-			attrs = {
-				ATTR_sample_pos = { format = .FLOAT3 }
-			}
-		}
-	})
 	vertices := []Vec3 {
 		{-0.5, -0.5, 0},
 		{   0,  0.5, 0},
@@ -35,6 +26,25 @@ init :: proc() {
 	g.vertex_buffer = sg.make_buffer({
 		data = sg_range(vertices)
 	})
+
+	g.shader = sg.alloc_shader()
+	g.pipeline = sg.alloc_pipeline()
+}
+
+on_start_or_reload :: proc() {
+	// also hot-reload shader/pipeline
+	if sg.query_pipeline_state(g.pipeline) != .ALLOC do sg.uninit_pipeline(g.pipeline)
+	if sg.query_shader_state(g.shader) != .ALLOC do sg.uninit_shader(g.shader)
+
+	sg.init_shader(g.shader, sample_shader_desc(sg.query_backend()))
+	sg.init_pipeline(g.pipeline, {
+		shader = g.shader,
+		layout = {
+			attrs = {
+				ATTR_sample_pos = { format = .FLOAT3 }
+			}
+		}
+	})
 }
 
 cleanup :: proc() {
@@ -42,8 +52,6 @@ cleanup :: proc() {
 	sg.destroy_pipeline(g.pipeline)
 	sg.destroy_shader(g.shader)
 }
-
-on_reload :: proc() {}
 
 update :: proc(dt: f32) {
 	if key_down[.ESCAPE] {
